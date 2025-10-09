@@ -13,6 +13,7 @@ GitHub Action to build and push Docker images to GitHub Container Registry.
     github-actor: ${{ github.actor }}
     github-repository: ${{ github.repository }}
     github-sha: ${{ github.sha }}
+```
 
 ## Inputs
 
@@ -46,3 +47,4 @@ GitHub Action to build and push Docker images to GitHub Container Registry.
     github-actor: ${{ github.actor }}
     github-repository: ${{ github.repository }}
     github-sha: ${{ github.sha }}
+```
