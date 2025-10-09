@@ -26,6 +26,10 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    - name: Echo Information
+      run: echo "Starting Docker build and push action for image ${{ inputs.image-name }}"
+      shell: bash
+
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag ${{ inputs.image-name }}:${{ inputs.github-sha }}
       shell: bash
