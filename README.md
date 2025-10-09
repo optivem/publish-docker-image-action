@@ -6,9 +6,9 @@ GitHub Action to build and push Docker images to GitHub Container Registry.
 
 ```yaml
 - name: Build and Push Docker Image
-  uses: your-username/build-push-docker-action@v1
+  uses: optivem/build-push-docker-action@v1
   with:
-    image-name: my-app
+    image-name: my-image-name
     github-token: ${{ secrets.GITHUB_TOKEN }}
     github-actor: ${{ github.actor }}
     github-repository: ${{ github.repository }}
@@ -34,20 +34,6 @@ GitHub Action to build and push Docker images to GitHub Container Registry.
 - **`github-actor`**: GitHub username for registry authentication. Typically `${{ github.actor }}`.
 - **`github-repository`**: Full repository name for image tagging. Typically `${{ github.repository }}`.
 - **`github-sha`**: Git commit SHA for image tagging. Typically `${{ github.sha }}`.
-
-### Example Usage
-
-```yaml
-- name: Build and Push Docker Image
-  uses: ./.github/actions/build-push-docker
-  with:
-    working-directory: ./src
-    image-name: my-awesome-app
-    github-token: ${{ secrets.GITHUB_TOKEN }}
-    github-actor: ${{ github.actor }}
-    github-repository: ${{ github.repository }}
-    github-sha: ${{ github.sha }}
-```
 
 ## License
 
