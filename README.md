@@ -8,7 +8,7 @@ GitHub Action to build and push Docker images to GitHub Container Registry.
 - name: Build and Push Docker Image
   uses: optivem/build-push-docker-action@v1
   with:
-    image-name: my-app
+    image-name: my-image-name
     github-token: ${{ secrets.GITHUB_TOKEN }}
     github-actor: ${{ github.actor }}
     github-repository: ${{ github.repository }}
