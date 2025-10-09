@@ -48,3 +48,12 @@ GitHub Action to build and push Docker images to GitHub Container Registry.
     github-repository: ${{ github.repository }}
     github-sha: ${{ github.sha }}
 ```
+
+## License
+
+MIT License
+
+## Contributors
+
+- [Valentina Jemuović](https://www.linkedin.com/in/valentinajemuovic/)
+- [Jelena Cupać](https://www.linkedin.com/in/jelenacupac/)
