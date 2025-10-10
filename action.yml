@@ -1,5 +1,5 @@
 name: 'Build and Push Docker Image'
-description: 'Builds Docker image, logs in to GitHub Container Registry, and pushes the image with automatic tagging'
+description: 'Builds Docker image and pushes to container registry with automatic tagging'
 author: 'Optivem'
 branding:
   icon: 'upload-cloud'  # Choose from Feather icons
@@ -12,25 +12,40 @@ inputs:
   image-name:
     description: 'Name of the Docker image (without registry prefix)'
     required: true
-  github-token:
-    description: 'GitHub token for registry authentication (use secrets.GITHUB_TOKEN)'
+  registry:
+    description: 'Container registry URL (e.g., ghcr.io, docker.io, gcr.io)'
+    required: false
+    default: 'ghcr.io'
+  registry-username:
+    description: 'Username for registry authentication'
+    required: false
+    default: '${{ github.actor }}'
+  registry-password:
+    description: 'Password/token for registry authentication'
     required: true
-  github-actor:
-    description: 'GitHub actor for registry authentication (use github.actor)'
-    required: true
-  github-repository:
-    description: 'GitHub repository for image tagging (use github.repository)'
-    required: true
+  image-namespace:
+    description: 'Namespace/organization for the image (e.g., github.repository for GHCR)'
+    required: false
+    default: '${{ github.repository }}'
   github-sha:
-    description: 'GitHub SHA for image tagging (use github.sha)'
-    required: true
+    description: 'Git commit SHA for image tagging'
+    required: false
+    default: '${{ github.sha }}'
+  tags:
+    description: 'Additional tags to apply (comma-separated, e.g., "latest,v1.0.0")'
+    required: false
+    default: 'latest'
+  dockerfile:
+    description: 'Path to Dockerfile relative to working directory'
+    required: false
+    default: 'Dockerfile'
 outputs:
   image-url:
     description: 'Full URL of the pushed Docker image'
-    value: 'ghcr.io/${{ inputs.github-repository }}/${{ inputs.image-name }}:latest'
-  image-digest:
-    description: 'SHA256 digest of the pushed image'
-    value: ${{ steps.push.outputs.digest }}
+    value: '${{ inputs.registry }}/${{ inputs.image-namespace }}/${{ inputs.image-name }}:latest'
+  image-digest-url:
+    description: 'Full URL with SHA256 digest of the pushed image'
+    value: '${{ inputs.registry }}/${{ inputs.image-namespace }}/${{ inputs.image-name }}@${{ steps.push.outputs.digest }}'
 runs:
   using: 'composite'
   steps:
@@ -39,37 +54,70 @@ runs:
         echo "🐳 Starting Docker build and push action"
         echo "📦 Image name: ${{ inputs.image-name }}"
         echo "📁 Working directory: ${{ inputs.working-directory }}"
-        echo "🔖 Git SHA: ${{ inputs.github-sha }}"
-        echo "📍 Repository: ${{ inputs.github-repository }}"
+        echo "�️ Dockerfile: ${{ inputs.dockerfile }}"
+        echo "�🔖 Git SHA: ${{ inputs.github-sha }}"
+        echo "🏷️ Tags: ${{ inputs.tags }}"
+        echo "🌐 Registry: ${{ inputs.registry }}"
+        echo "📍 Namespace: ${{ inputs.image-namespace }}"
+        echo "👤 Username: ${{ inputs.registry-username }}"
       shell: bash
 
     - name: Build the Docker image
       run: |
         echo "🔨 Building Docker image..."
-        docker build . --file Dockerfile --tag ${{ inputs.image-name }}:${{ inputs.github-sha }}
+        docker build . --file ${{ inputs.dockerfile }} --tag ${{ inputs.image-name }}:${{ inputs.github-sha }}
         echo "✅ Docker image built successfully"
       shell: bash
       working-directory: ${{ inputs.working-directory }}
 
-    - name: Log in to GitHub Container Registry
+    - name: Log in to Container Registry
       run: |
-        echo "🔐 Logging in to GitHub Container Registry..."
-        echo ${{ inputs.github-token }} | docker login ghcr.io -u ${{ inputs.github-actor }} --password-stdin
-        echo "✅ Successfully logged in to GHCR"
+        echo "🔐 Logging in to ${{ inputs.registry }}..."
+        echo ${{ inputs.registry-password }} | docker login ${{ inputs.registry }} -u ${{ inputs.registry-username }} --password-stdin
+        echo "✅ Successfully logged in to registry"
       shell: bash
 
     - name: Tag Docker image
       run: |
-        docker tag ${{ inputs.image-name }}:${{ inputs.github-sha }} ghcr.io/${{ inputs.github-repository }}/${{ inputs.image-name }}:latest
-        docker tag ${{ inputs.image-name }}:${{ inputs.github-sha }} ghcr.io/${{ inputs.github-repository }}/${{ inputs.image-name }}:${{ inputs.github-sha }}
-        echo "🏷️ Tagged image with both 'latest' and SHA tags"
+        # Create base image reference
+        BASE_IMAGE="${{ inputs.registry }}/${{ inputs.image-namespace }}/${{ inputs.image-name }}"
+        
+        # Tag with SHA
+        docker tag ${{ inputs.image-name }}:${{ inputs.github-sha }} "${BASE_IMAGE}:${{ inputs.github-sha }}"
+        echo "🏷️ Tagged with SHA: ${BASE_IMAGE}:${{ inputs.github-sha }}"
+        
+        # Tag with additional tags
+        IFS=',' read -ra TAGS <<< "${{ inputs.tags }}"
+        for tag in "${TAGS[@]}"; do
+          tag=$(echo "$tag" | xargs)  # trim whitespace
+          if [ -n "$tag" ]; then
+            docker tag ${{ inputs.image-name }}:${{ inputs.github-sha }} "${BASE_IMAGE}:${tag}"
+            echo "🏷️ Tagged with: ${BASE_IMAGE}:${tag}"
+          fi
+        done
       shell: bash
 
     - name: Push Docker image
       id: push
       run: |
-        docker push ghcr.io/${{ inputs.github-repository }}/${{ inputs.image-name }}:latest
-        docker push ghcr.io/${{ inputs.github-repository }}/${{ inputs.image-name }}:${{ inputs.github-sha }}
-        echo "✅ Successfully pushed Docker image to GitHub Container Registry"
-        echo "📦 Image URL: ghcr.io/${{ inputs.github-repository }}/${{ inputs.image-name }}:latest"
+        BASE_IMAGE="${{ inputs.registry }}/${{ inputs.image-namespace }}/${{ inputs.image-name }}"
+        
+        echo "📤 Pushing Docker images..."
+        
+        # Push SHA tagged image
+        docker push "${BASE_IMAGE}:${{ inputs.github-sha }}"
+        echo "✅ Pushed SHA tagged image: ${BASE_IMAGE}:${{ inputs.github-sha }}"
+        
+        # Push additional tagged images
+        IFS=',' read -ra TAGS <<< "${{ inputs.tags }}"
+        for tag in "${TAGS[@]}"; do
+          tag=$(echo "$tag" | xargs)  # trim whitespace
+          if [ -n "$tag" ]; then
+            docker push "${BASE_IMAGE}:${tag}"
+            echo "✅ Pushed tagged image: ${BASE_IMAGE}:${tag}"
+          fi
+        done
+        
+        echo "🎉 Successfully pushed all Docker images to ${{ inputs.registry }}"
+        echo "📦 Main image URL: ${BASE_IMAGE}:latest"
       shell: bash

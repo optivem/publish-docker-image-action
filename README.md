@@ -17,15 +17,25 @@ A GitHub Action that builds Docker images and pushes them to GitHub Container Re
 
 ## Usage
 
+### Basic Usage (GitHub Container Registry)
+
 ```yaml
 - name: Build and Push Docker Image
   uses: optivem/build-push-docker-action@v1
   with:
     image-name: my-image-name
-    github-token: ${{ secrets.GITHUB_TOKEN }}
-    github-actor: ${{ github.actor }}
-    github-repository: ${{ github.repository }}
-    github-sha: ${{ github.sha }}
+    registry-password: ${{ secrets.GITHUB_TOKEN }}
+```
+
+### Complete Example
+
+```yaml
+- name: Build and Push Docker Image
+  uses: optivem/build-push-docker-action@v1
+  with:
+    image-name: my-awesome-app
+    registry-password: ${{ secrets.GITHUB_TOKEN }}
+    tags: "latest,v1.0.0,${{ github.sha }}"
 ```
 
 ## Inputs
@@ -33,11 +43,21 @@ A GitHub Action that builds Docker images and pushes them to GitHub Container Re
 | Name | Description | Required | Default |
 |------|-------------|----------|---------|
 | `working-directory` | Working directory where Dockerfile is located | No | `.` |
-| `image-name` | Name of the Docker image | Yes | - |
-| `github-token` | GitHub token for registry authentication | Yes | - |
-| `github-actor` | GitHub actor for registry authentication | Yes | - |
-| `github-repository` | GitHub repository for image tagging | Yes | - |
-| `github-sha` | GitHub SHA for image tagging | Yes | - |
+| `image-name` | Name of the Docker image (without registry prefix) | Yes | - |
+| `registry` | Container registry URL | No | `ghcr.io` |
+| `registry-username` | Username for registry authentication | No | `${{ github.actor }}` |
+| `registry-password` | Password/token for registry authentication | Yes | - |
+| `image-namespace` | Namespace/organization for the image | No | `${{ github.repository }}` |
+| `github-sha` | Git commit SHA for image tagging | No | `${{ github.sha }}` |
+| `tags` | Additional tags to apply (comma-separated) | No | `latest` |
+| `dockerfile` | Path to Dockerfile relative to working directory | No | `Dockerfile` |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| `image-url` | Full URL of the pushed Docker image |
+| `image-digest-url` | Full URL with SHA256 digest of the pushed image |
 
 ### Input Details
 
@@ -50,15 +70,13 @@ A GitHub Action that builds Docker images and pushes them to GitHub Container Re
 
 ## Examples
 
-### Basic Usage
+### GitHub Container Registry (Default)
 
 ```yaml
 name: Build and Deploy
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
     branches: [ main ]
 
 jobs:
@@ -69,68 +87,89 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Build and Push Docker Image
+    - name: Build and Push to GHCR
       uses: optivem/build-push-docker-action@v1
       with:
         image-name: my-awesome-app
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        github-actor: ${{ github.actor }}
-        github-repository: ${{ github.repository }}
-        github-sha: ${{ github.sha }}
+        registry-password: ${{ secrets.GITHUB_TOKEN }}
+        tags: "latest,${{ github.ref_name }}"
 ```
 
-### With Custom Working Directory
+### Docker Hub
 
 ```yaml
-- name: Build and Push Docker Image
+- name: Build and Push to Docker Hub
+  uses: optivem/build-push-docker-action@v1
+  with:
+    image-name: my-awesome-app
+    registry: docker.io
+    registry-username: ${{ secrets.DOCKERHUB_USERNAME }}
+    registry-password: ${{ secrets.DOCKERHUB_TOKEN }}
+    image-namespace: myorganization
+    tags: "latest,v1.0.0"
+```
+
+### Google Container Registry
+
+```yaml
+- name: Build and Push to GCR
+  uses: optivem/build-push-docker-action@v1
+  with:
+    image-name: my-awesome-app
+    registry: gcr.io
+    registry-username: _json_key
+    registry-password: ${{ secrets.GCR_JSON_KEY }}
+    image-namespace: my-gcp-project
+```
+
+### Azure Container Registry
+
+```yaml
+- name: Build and Push to ACR
+  uses: optivem/build-push-docker-action@v1
+  with:
+    image-name: my-awesome-app
+    registry: myregistry.azurecr.io
+    registry-username: ${{ secrets.ACR_USERNAME }}
+    registry-password: ${{ secrets.ACR_PASSWORD }}
+    image-namespace: myproject
+```
+
+### Amazon ECR
+
+```yaml
+- name: Configure AWS credentials
+  uses: aws-actions/configure-aws-credentials@v4
+  with:
+    aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    aws-region: us-east-1
+
+- name: Login to Amazon ECR
+  id: login-ecr
+  uses: aws-actions/amazon-ecr-login@v2
+
+- name: Build and Push to ECR
+  uses: optivem/build-push-docker-action@v1
+  with:
+    image-name: my-awesome-app
+    registry: ${{ steps.login-ecr.outputs.registry }}
+    registry-username: AWS
+    registry-password: ${{ steps.login-ecr.outputs.docker_password_stdout }}
+    image-namespace: my-repo
+```
+
+### Custom Dockerfile and Multiple Tags
+
+```yaml
+- name: Build and Push with Custom Settings
   uses: optivem/build-push-docker-action@v1
   with:
     working-directory: ./backend
+    dockerfile: Dockerfile.prod
     image-name: my-backend-api
-    github-token: ${{ secrets.GITHUB_TOKEN }}
-    github-actor: ${{ github.actor }}
-    github-repository: ${{ github.repository }}
-    github-sha: ${{ github.sha }}
-```
-
-### Complete Workflow Example
-
-```yaml
-name: CI/CD Pipeline
-
-on:
-  push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main ]
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - name: Run Tests
-      run: |
-        # Add your test commands here
-        echo "Running tests..."
-        
-  build-and-push:
-    needs: test
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push'
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    - name: Build and Push Docker Image
-      uses: optivem/build-push-docker-action@v1
-      with:
-        image-name: ${{ github.event.repository.name }}
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        github-actor: ${{ github.actor }}
-        github-repository: ${{ github.repository }}
-        github-sha: ${{ github.sha }}
+    registry-password: ${{ secrets.GITHUB_TOKEN }}
+    tags: "latest,stable,${{ github.run_number }},sha-${{ github.sha }}"
 ```
 
 ## How It Works
