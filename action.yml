@@ -1,4 +1,4 @@
-name: 'Build and Push Docker Image'
+name: 'Publish Docker Image'
 description: 'Builds Docker image and pushes to container registry with automatic tagging'
 author: 'Optivem'
 branding:

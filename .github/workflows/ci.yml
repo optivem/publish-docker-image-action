@@ -24,10 +24,7 @@ jobs:
       run: |
         # Validate that all required inputs are defined
         grep -q "image-name:" action.yml
-        grep -q "github-token:" action.yml
-        grep -q "github-actor:" action.yml
-        grep -q "github-repository:" action.yml
-        grep -q "github-sha:" action.yml
+        grep -q "registry-password:" action.yml
         echo "✅ All required inputs are defined"
         
     - name: Check branding
@@ -58,7 +55,4 @@ jobs:
       uses: ./
       with:
         image-name: test-image
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        github-actor: ${{ github.actor }}
-        github-repository: ${{ github.repository }}
-        github-sha: ${{ github.sha }}
+        registry-password: ${{ secrets.GITHUB_TOKEN }}

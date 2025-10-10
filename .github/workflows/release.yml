@@ -45,13 +45,10 @@ jobs:
           ## Usage
           
           \`\`\`yaml
-          - uses: optivem/build-push-docker-action@${{ steps.extract_version.outputs.version }}
+          - uses: optivem/publish-docker-image-action@${{ steps.extract_version.outputs.version }}
             with:
               image-name: my-image
-              github-token: \${{ secrets.GITHUB_TOKEN }}
-              github-actor: \${{ github.actor }}
-              github-repository: \${{ github.repository }}
-              github-sha: \${{ github.sha }}
+              registry-password: \${{ secrets.GITHUB_TOKEN }}
           \`\`\`"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

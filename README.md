@@ -1,8 +1,8 @@
-# Build and Push Docker Image Action
+# Publish Docker Image Action
 
-[![GitHub release](https://img.shields.io/github/release/optivem/build-push-docker-action.svg)](https://github.com/optivem/build-push-docker-action/releases)
-[![GitHub marketplace](https://img.shields.io/badge/marketplace-build--push--docker--action-blue?logo=github)](https://github.com/marketplace/actions/build-and-push-docker-image)
-[![CI](https://github.com/optivem/build-push-docker-action/workflows/CI/badge.svg)](https://github.com/optivem/build-push-docker-action/actions)
+[![GitHub release](https://img.shields.io/github/release/optivem/publish-docker-image-action.svg)](https://github.com/optivem/publish-docker-image-action/releases)
+[![GitHub marketplace](https://img.shields.io/badge/marketplace-publish--docker--image--action-blue?logo=github)](https://github.com/marketplace/actions/publish-docker-image-action)
+[![CI](https://github.com/optivem/publish-docker-image-action/workflows/CI/badge.svg)](https://github.com/optivem/publish-docker-image-action/actions)
 
 A GitHub Action that builds Docker images and pushes them to GitHub Container Registry (ghcr.io). This action simplifies the Docker build and push workflow for your CI/CD pipelines.
 
@@ -21,7 +21,7 @@ A GitHub Action that builds Docker images and pushes them to GitHub Container Re
 
 ```yaml
 - name: Build and Push Docker Image
-  uses: optivem/build-push-docker-action@v1
+  uses: optivem/publish-docker-image-action@v1
   with:
     image-name: my-image-name
     registry-password: ${{ secrets.GITHUB_TOKEN }}
@@ -31,7 +31,7 @@ A GitHub Action that builds Docker images and pushes them to GitHub Container Re
 
 ```yaml
 - name: Build and Push Docker Image
-  uses: optivem/build-push-docker-action@v1
+  uses: optivem/publish-docker-image-action@v1
   with:
     image-name: my-awesome-app
     registry-password: ${{ secrets.GITHUB_TOKEN }}
@@ -88,7 +88,7 @@ jobs:
       uses: actions/checkout@v4
       
     - name: Build and Push to GHCR
-      uses: optivem/build-push-docker-action@v1
+      uses: optivem/publish-docker-image-action@v1
       with:
         image-name: my-awesome-app
         registry-password: ${{ secrets.GITHUB_TOKEN }}
@@ -99,7 +99,7 @@ jobs:
 
 ```yaml
 - name: Build and Push to Docker Hub
-  uses: optivem/build-push-docker-action@v1
+  uses: optivem/publish-docker-image-action@v1
   with:
     image-name: my-awesome-app
     registry: docker.io
@@ -113,7 +113,7 @@ jobs:
 
 ```yaml
 - name: Build and Push to GCR
-  uses: optivem/build-push-docker-action@v1
+  uses: optivem/publish-docker-image-action@v1
   with:
     image-name: my-awesome-app
     registry: gcr.io
@@ -126,7 +126,7 @@ jobs:
 
 ```yaml
 - name: Build and Push to ACR
-  uses: optivem/build-push-docker-action@v1
+  uses: optivem/publish-docker-image-action@v1
   with:
     image-name: my-awesome-app
     registry: myregistry.azurecr.io
@@ -150,7 +150,7 @@ jobs:
   uses: aws-actions/amazon-ecr-login@v2
 
 - name: Build and Push to ECR
-  uses: optivem/build-push-docker-action@v1
+  uses: optivem/publish-docker-image-action@v1
   with:
     image-name: my-awesome-app
     registry: ${{ steps.login-ecr.outputs.registry }}
@@ -163,7 +163,7 @@ jobs:
 
 ```yaml
 - name: Build and Push with Custom Settings
-  uses: optivem/build-push-docker-action@v1
+  uses: optivem/publish-docker-image-action@v1
   with:
     working-directory: ./backend
     dockerfile: Dockerfile.prod

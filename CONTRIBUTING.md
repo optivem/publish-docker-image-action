@@ -1,4 +1,4 @@
-# Contributing to Build and Push Docker Image Action
+# Contributing to Publish Docker Image Action
 
 Thank you for your interest in contributing to this GitHub Action! We welcome contributions from the community.
 
@@ -8,7 +8,7 @@ Thank you for your interest in contributing to this GitHub Action! We welcome co
 
 If you find a bug or have a suggestion for improvement:
 
-1. Check if the issue already exists in our [GitHub Issues](https://github.com/optivem/build-push-docker-action/issues)
+1. Check if the issue already exists in our [GitHub Issues](https://github.com/optivem/publish-docker-image-action/issues)
 2. If not, create a new issue with:
    - A clear title and description
    - Steps to reproduce the issue
@@ -70,8 +70,8 @@ We use [Semantic Versioning](https://semver.org/):
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/optivem/build-push-docker-action.git
-   cd build-push-docker-action
+   git clone https://github.com/optivem/publish-docker-image-action.git
+   cd publish-docker-image-action
    ```
 
 2. **Make your changes** to `action.yml`
