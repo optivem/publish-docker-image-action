@@ -1,0 +1,54 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Extract version
+      id: extract_version
+      run: |
+        VERSION=${GITHUB_REF#refs/tags/}
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "major_version=${VERSION%%.*}" >> $GITHUB_OUTPUT
+        
+    - name: Create Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ steps.extract_version.outputs.version }}
+        body: |
+          ## Changes in ${{ steps.extract_version.outputs.version }}
+          
+          See [CHANGELOG.md](CHANGELOG.md) for detailed changes.
+          
+          ## Usage
+          
+          ```yaml
+          - uses: optivem/build-push-docker-action@${{ steps.extract_version.outputs.version }}
+            with:
+              image-name: my-image
+              github-token: ${{ secrets.GITHUB_TOKEN }}
+              github-actor: ${{ github.actor }}
+              github-repository: ${{ github.repository }}
+              github-sha: ${{ github.sha }}
+          ```
+        draft: false
+        prerelease: false
+        
+    - name: Update major version tag
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git tag -fa ${{ steps.extract_version.outputs.major_version }} -m "Update ${{ steps.extract_version.outputs.major_version }} tag"
+        git push origin ${{ steps.extract_version.outputs.major_version }} --force
