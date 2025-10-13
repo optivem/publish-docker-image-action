@@ -49,9 +49,9 @@ outputs:
   image-digest-url:
     description: 'Full URL with SHA256 digest of the pushed image'
     value: '${{ inputs.registry }}/${{ inputs.image-namespace }}/${{ inputs.image-name }}@${{ steps.push.outputs.digest }}'
-  commit-sha:
-    description: 'The commit SHA used for tagging the Docker image'
-    value: '${{ inputs.commit-sha }}'
+  image-created:
+    description: 'Timestamp when the Docker image was created'
+    value: '${{ steps.inspect.outputs.image-created }}'
 runs:
   using: 'composite'
   steps:
@@ -75,6 +75,19 @@ runs:
         echo "✅ Docker image built successfully"
       shell: bash
       working-directory: ${{ inputs.working-directory }}
+
+    - name: Inspect Docker image
+      id: inspect
+      run: |
+        echo "🔍 Inspecting Docker image..."
+        
+        # Get image creation timestamp
+        IMAGE_CREATED=$(docker inspect ${{ inputs.image-name }}:${{ inputs.commit-sha }} --format='{{.Created}}')
+        echo "image-created=$IMAGE_CREATED" >> $GITHUB_OUTPUT
+        echo "📅 Image created: $IMAGE_CREATED"
+        
+        echo "✅ Image inspection completed"
+      shell: bash
 
     - name: Log in to Container Registry
       run: |
