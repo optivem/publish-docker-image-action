@@ -37,7 +37,7 @@ A GitHub Action that builds Docker images and pushes them to GitHub Container Re
   with:
     image-name: my-awesome-app
     registry-password: ${{ secrets.GITHUB_TOKEN }}
-    latest-tag: "v1.0.0"
+    image-latest-tag: "v1.0.0"
 ```
 
 ## Inputs
@@ -51,7 +51,7 @@ A GitHub Action that builds Docker images and pushes them to GitHub Container Re
 | `registry-password` | Password/token for registry authentication | Yes | - |
 | `image-namespace` | Namespace/organization for the image | No | `${{ github.repository }}` |
 | `commit-sha` | Git commit SHA for image tagging | No | `${{ github.sha }}` |
-| `latest-tag` | Tag to apply for the latest image (single value, e.g., "latest") | No | `latest` |
+| `image-latest-tag` | Tag to apply for the latest image (single value, e.g., "latest") | No | `latest` |
 | `dockerfile` | Path to Dockerfile relative to working directory | No | `Dockerfile` |
 
 ## Outputs
@@ -95,7 +95,7 @@ jobs:
       with:
         image-name: my-awesome-app
         registry-password: ${{ secrets.GITHUB_TOKEN }}
-        latest-tag: "${{ github.ref_name }}"
+        image-latest-tag: "${{ github.ref_name }}"
 ```
 
 ### Docker Hub
@@ -109,7 +109,7 @@ jobs:
     registry-username: ${{ secrets.DOCKERHUB_USERNAME }}
     registry-password: ${{ secrets.DOCKERHUB_TOKEN }}
     image-namespace: myorganization
-    latest-tag: "v1.0.0"
+    image-latest-tag: "v1.0.0"
 ```
 
 ### Google Container Registry
@@ -172,7 +172,7 @@ jobs:
     dockerfile: Dockerfile.prod
     image-name: my-backend-api
     registry-password: ${{ secrets.GITHUB_TOKEN }}
-    latest-tag: "stable"
+    image-latest-tag: "stable"
 ```
 
 ## How It Works
