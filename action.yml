@@ -1,8 +1,5 @@
 name: 'Publish Docker Image'
-description: 'Builds Docker         echo "📁 Working directory: ${{ inputs.working-directory }}"
-        echo "🐳 Dockerfile: ${{ inputs.dockerfile }}"
-        echo "🔖 Git SHA: ${{ inputs.commit-sha }}"
-        echo "🏷️ Latest tag: ${{ inputs.image-latest-tag }}"e and pushes to container registry with automatic tagging'
+description: 'Builds Docker image and pushes to container registry with automatic tagging'
 author: 'Optivem'
 branding:
   icon: 'upload-cloud'  # Choose from Feather icons
@@ -60,9 +57,9 @@ runs:
         echo "🐳 Starting Docker build and push action"
         echo "📦 Image name: ${{ inputs.image-name }}"
         echo "📁 Working directory: ${{ inputs.working-directory }}"
-        echo "�️ Dockerfile: ${{ inputs.dockerfile }}"
-        echo "�🔖 Git SHA: ${{ inputs.github-sha }}"
-        echo "🏷️ Tags: ${{ inputs.tags }}"
+        echo "🐳 Dockerfile: ${{ inputs.dockerfile }}"
+        echo "🔖 Git SHA: ${{ inputs.commit-sha }}"
+        echo "🏷️ Latest tag: ${{ inputs.image-latest-tag }}"
         echo "🌐 Registry: ${{ inputs.registry }}"
         echo "📍 Namespace: ${{ inputs.image-namespace }}"
         echo "👤 Username: ${{ inputs.registry-username }}"
@@ -126,5 +123,15 @@ runs:
         echo "✅ Pushed tagged image: ${BASE_IMAGE}:${{ inputs.image-latest-tag }}"
         
         echo "🎉 Successfully pushed all Docker images to ${{ inputs.registry }}"
-        echo "📦 Main image URL: ${BASE_IMAGE}:latest"
+        echo "📦 Main image URL: ${BASE_IMAGE}:${{ inputs.image-latest-tag }}"
+      shell: bash
+
+    - name: Output Summary
+      run: |
+        echo "📋 Action Outputs Summary:"
+        echo "========================="
+        echo "🔗 Image Latest URL: ${{ inputs.registry }}/${{ inputs.image-namespace }}/${{ inputs.image-name }}:${{ inputs.image-latest-tag }}"
+        echo "🔗 Image Digest URL: ${{ inputs.registry }}/${{ inputs.image-namespace }}/${{ inputs.image-name }}@${{ steps.push.outputs.digest }}"
+        echo "⏰ Image Created: ${{ steps.inspect.outputs.image-created }}"
+        echo "========================="
       shell: bash
