@@ -1,5 +1,8 @@
 name: 'Publish Docker Image'
-description: 'Builds Docker image and pushes to container registry with automatic tagging'
+description: 'Builds Dock        echo "📁 Working directory: ${{ inputs.working-directory }}"
+        echo "🐳 Dockerfile: ${{ inputs.dockerfile }}"
+        echo "🔖 Git SHA: ${{ inputs.commit-sha }}"
+        echo "🏷️ Tags: ${{ inputs.tags }}"mage and pushes to container registry with automatic tagging'
 author: 'Optivem'
 branding:
   icon: 'upload-cloud'  # Choose from Feather icons
@@ -27,7 +30,7 @@ inputs:
     description: 'Namespace/organization for the image (e.g., github.repository for GHCR)'
     required: false
     default: '${{ github.repository }}'
-  github-sha:
+  commit-sha:
     description: 'Git commit SHA for image tagging'
     required: false
     default: '${{ github.sha }}'
@@ -65,7 +68,7 @@ runs:
     - name: Build the Docker image
       run: |
         echo "🔨 Building Docker image..."
-        docker build . --file ${{ inputs.dockerfile }} --tag ${{ inputs.image-name }}:${{ inputs.github-sha }}
+        docker build . --file ${{ inputs.dockerfile }} --tag ${{ inputs.image-name }}:${{ inputs.commit-sha }}
         echo "✅ Docker image built successfully"
       shell: bash
       working-directory: ${{ inputs.working-directory }}
@@ -83,15 +86,15 @@ runs:
         BASE_IMAGE="${{ inputs.registry }}/${{ inputs.image-namespace }}/${{ inputs.image-name }}"
         
         # Tag with SHA
-        docker tag ${{ inputs.image-name }}:${{ inputs.github-sha }} "${BASE_IMAGE}:${{ inputs.github-sha }}"
-        echo "🏷️ Tagged with SHA: ${BASE_IMAGE}:${{ inputs.github-sha }}"
+        docker tag ${{ inputs.image-name }}:${{ inputs.commit-sha }} "${BASE_IMAGE}:${{ inputs.commit-sha }}"
+        echo "🏷️ Tagged with SHA: ${BASE_IMAGE}:${{ inputs.commit-sha }}"
         
         # Tag with additional tags
         IFS=',' read -ra TAGS <<< "${{ inputs.tags }}"
         for tag in "${TAGS[@]}"; do
           tag=$(echo "$tag" | xargs)  # trim whitespace
           if [ -n "$tag" ]; then
-            docker tag ${{ inputs.image-name }}:${{ inputs.github-sha }} "${BASE_IMAGE}:${tag}"
+            docker tag ${{ inputs.image-name }}:${{ inputs.commit-sha }} "${BASE_IMAGE}:${tag}"
             echo "🏷️ Tagged with: ${BASE_IMAGE}:${tag}"
           fi
         done
@@ -105,8 +108,8 @@ runs:
         echo "📤 Pushing Docker images..."
         
         # Push SHA tagged image
-        docker push "${BASE_IMAGE}:${{ inputs.github-sha }}"
-        echo "✅ Pushed SHA tagged image: ${BASE_IMAGE}:${{ inputs.github-sha }}"
+        docker push "${BASE_IMAGE}:${{ inputs.commit-sha }}"
+        echo "✅ Pushed SHA tagged image: ${BASE_IMAGE}:${{ inputs.commit-sha }}"
         
         # Push additional tagged images
         IFS=',' read -ra TAGS <<< "${{ inputs.tags }}"
