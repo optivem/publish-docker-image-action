@@ -58,7 +58,7 @@ A GitHub Action that builds Docker images and pushes them to GitHub Container Re
 |------|-------------|
 | `image-url` | Full URL of the pushed Docker image |
 | `image-digest-url` | Full URL with SHA256 digest of the pushed image |
-| `commit-sha` | The commit SHA used for tagging the Docker image |
+| `image-created` | Timestamp when the Docker image was created |
 
 ### Input Details
 
