@@ -42,7 +42,7 @@ inputs:
 outputs:
   image-latest-url:
     description: 'Full URL of the pushed Docker image with latest tag'
-    value: '${{ inputs.registry }}/${{ inputs.image-namespace }}/${{ inputs.image-name }}:${{ inputs.image-latest-tag }}'
+    value: '${{ steps.tag.outputs.latest-image-url }}'
   image-digest-url:
     description: 'Full URL with SHA256 digest of the pushed image'
     value: '${{ inputs.registry }}/${{ inputs.image-namespace }}/${{ inputs.image-name }}@${{ steps.push.outputs.digest }}'
@@ -94,17 +94,22 @@ runs:
       shell: bash
 
     - name: Tag Docker image
+      id: tag
       run: |
         # Create base image reference
         BASE_IMAGE="${{ inputs.registry }}/${{ inputs.image-namespace }}/${{ inputs.image-name }}"
+        
+        # Construct the latest image URL
+        LATEST_IMAGE_URL="${BASE_IMAGE}:${{ inputs.image-latest-tag }}"
+        echo "latest-image-url=$LATEST_IMAGE_URL" >> $GITHUB_OUTPUT
         
         # Tag with SHA
         docker tag ${{ inputs.image-name }}:${{ inputs.commit-sha }} "${BASE_IMAGE}:${{ inputs.commit-sha }}"
         echo "🏷️ Tagged with SHA: ${BASE_IMAGE}:${{ inputs.commit-sha }}"
         
         # Tag with latest tag
-        docker tag ${{ inputs.image-name }}:${{ inputs.commit-sha }} "${BASE_IMAGE}:${{ inputs.image-latest-tag }}"
-        echo "🏷️ Tagged with: ${BASE_IMAGE}:${{ inputs.image-latest-tag }}"
+        docker tag ${{ inputs.image-name }}:${{ inputs.commit-sha }} "$LATEST_IMAGE_URL"
+        echo "🏷️ Tagged with: $LATEST_IMAGE_URL"
       shell: bash
 
     - name: Push Docker image
@@ -119,18 +124,18 @@ runs:
         echo "✅ Pushed SHA tagged image: ${BASE_IMAGE}:${{ inputs.commit-sha }}"
         
         # Push latest tagged image
-        docker push "${BASE_IMAGE}:${{ inputs.image-latest-tag }}"
-        echo "✅ Pushed tagged image: ${BASE_IMAGE}:${{ inputs.image-latest-tag }}"
+        docker push "${{ steps.tag.outputs.latest-image-url }}"
+        echo "✅ Pushed tagged image: ${{ steps.tag.outputs.latest-image-url }}"
         
         echo "🎉 Successfully pushed all Docker images to ${{ inputs.registry }}"
-        echo "📦 Main image URL: ${BASE_IMAGE}:${{ inputs.image-latest-tag }}"
+        echo "📦 Main image URL: ${{ steps.tag.outputs.latest-image-url }}"
       shell: bash
 
     - name: Output Summary
       run: |
         echo "📋 Action Outputs Summary:"
         echo "========================="
-        echo "🔗 Image Latest URL: ${{ inputs.registry }}/${{ inputs.image-namespace }}/${{ inputs.image-name }}:${{ inputs.image-latest-tag }}"
+        echo "🔗 Image Latest URL: ${{ steps.tag.outputs.latest-image-url }}"
         echo "🔗 Image Digest URL: ${{ inputs.registry }}/${{ inputs.image-namespace }}/${{ inputs.image-name }}@${{ steps.push.outputs.digest }}"
         echo "⏰ Image Created: ${{ steps.inspect.outputs.image-created }}"
         echo "========================="
