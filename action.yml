@@ -1,8 +1,5 @@
 name: 'Publish Docker Image'
-description: 'Builds Dock        echo "📁 Working directory: ${{ inputs.working-directory }}"
-        echo "🐳 Dockerfile: ${{ inputs.dockerfile }}"
-        echo "🔖 Git SHA: ${{ inputs.commit-sha }}"
-        echo "🏷️ Tags: ${{ inputs.tags }}"mage and pushes to container registry with automatic tagging'
+description: 'Builds Docker image and pushes to container registry with automatic tagging'
 author: 'Optivem'
 branding:
   icon: 'upload-cloud'  # Choose from Feather icons
