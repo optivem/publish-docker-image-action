@@ -43,13 +43,13 @@ inputs:
     required: false
     default: 'Dockerfile'
 outputs:
-  image-url:
-    description: 'Full URL of the pushed Docker image'
+  image-latest-url:
+    description: 'Full URL of the pushed Docker image with latest tag'
     value: '${{ inputs.registry }}/${{ inputs.image-namespace }}/${{ inputs.image-name }}:${{ inputs.image-latest-tag }}'
   image-digest-url:
     description: 'Full URL with SHA256 digest of the pushed image'
     value: '${{ inputs.registry }}/${{ inputs.image-namespace }}/${{ inputs.image-name }}@${{ steps.push.outputs.digest }}'
-  image-created:
+  image-created-timestamp:
     description: 'Timestamp when the Docker image was created'
     value: '${{ steps.inspect.outputs.image-created }}'
 runs:

@@ -58,9 +58,9 @@ A GitHub Action that builds Docker images and pushes them to GitHub Container Re
 
 | Name | Description |
 |------|-------------|
-| `image-url` | Full URL of the pushed Docker image |
+| `image-latest-url` | Full URL of the pushed Docker image with latest tag |
 | `image-digest-url` | Full URL with SHA256 digest of the pushed image |
-| `image-created` | Timestamp when the Docker image was created |
+| `image-created-timestamp` | Timestamp when the Docker image was created |
 
 ### Input Details
 
