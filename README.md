@@ -48,7 +48,7 @@ A GitHub Action that builds Docker images and pushes them to GitHub Container Re
 | `registry-username` | Username for registry authentication | No | `${{ github.actor }}` |
 | `registry-password` | Password/token for registry authentication | Yes | - |
 | `image-namespace` | Namespace/organization for the image | No | `${{ github.repository }}` |
-| `github-sha` | Git commit SHA for image tagging | No | `${{ github.sha }}` |
+| `commit-sha` | Git commit SHA for image tagging | No | `${{ github.sha }}` |
 | `tags` | Additional tags to apply (comma-separated) | No | `latest` |
 | `dockerfile` | Path to Dockerfile relative to working directory | No | `Dockerfile` |
 
@@ -58,6 +58,7 @@ A GitHub Action that builds Docker images and pushes them to GitHub Container Re
 |------|-------------|
 | `image-url` | Full URL of the pushed Docker image |
 | `image-digest-url` | Full URL with SHA256 digest of the pushed image |
+| `commit-sha` | The commit SHA used for tagging the Docker image |
 
 ### Input Details
 
@@ -66,7 +67,7 @@ A GitHub Action that builds Docker images and pushes them to GitHub Container Re
 - **`github-token`**: GitHub token for authenticating with GitHub Container Registry. Typically `${{ secrets.GITHUB_TOKEN }}`.
 - **`github-actor`**: GitHub username for registry authentication. Typically `${{ github.actor }}`.
 - **`github-repository`**: Full repository name for image tagging. Typically `${{ github.repository }}`.
-- **`github-sha`**: Git commit SHA for image tagging. Typically `${{ github.sha }}`.
+- **`commit-sha`**: Git commit SHA for image tagging. Typically `${{ github.sha }}`.
 
 ## Examples
 

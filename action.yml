@@ -49,6 +49,9 @@ outputs:
   image-digest-url:
     description: 'Full URL with SHA256 digest of the pushed image'
     value: '${{ inputs.registry }}/${{ inputs.image-namespace }}/${{ inputs.image-name }}@${{ steps.push.outputs.digest }}'
+  commit-sha:
+    description: 'The commit SHA used for tagging the Docker image'
+    value: '${{ inputs.commit-sha }}'
 runs:
   using: 'composite'
   steps:
