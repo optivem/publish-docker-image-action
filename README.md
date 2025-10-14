@@ -55,11 +55,8 @@ A GitHub Action that builds Docker images and pushes them to GitHub Container Re
 | `image-latest-tag` | Tag to apply for the latest image (single value, e.g., "latest") | No | `latest` |
 | `dockerfile` | Path to Dockerfile relative to working directory | No | `Dockerfile` |
 
-## Environment Variables
-
-| Name | Description | Required |
-|------|-------------|----------|
-| `REGISTRY_PASSWORD` | Password/token for registry authentication | Yes |
+**Registry Authentication Environment Variable:**
+- `REGISTRY_PASSWORD` - Password/token for registry authentication (Required)
 
 ## Outputs
 
