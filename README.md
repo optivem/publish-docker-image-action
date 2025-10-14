@@ -26,7 +26,8 @@ A GitHub Action that builds Docker images and pushes them to GitHub Container Re
   uses: optivem/publish-docker-image-action@v1
   with:
     image-name: my-image-name
-    registry-password: ${{ secrets.GITHUB_TOKEN }}
+  env:
+    REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ### Complete Example
@@ -36,8 +37,9 @@ A GitHub Action that builds Docker images and pushes them to GitHub Container Re
   uses: optivem/publish-docker-image-action@v1
   with:
     image-name: my-awesome-app
-    registry-password: ${{ secrets.GITHUB_TOKEN }}
     image-latest-tag: "v1.0.0"
+  env:
+    REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ## Inputs
@@ -48,11 +50,16 @@ A GitHub Action that builds Docker images and pushes them to GitHub Container Re
 | `image-name` | Name of the Docker image (without registry prefix) | Yes | - |
 | `registry` | Container registry URL | No | `ghcr.io` |
 | `registry-username` | Username for registry authentication | No | `${{ github.actor }}` |
-| `registry-password` | Password/token for registry authentication | Yes | - |
 | `image-namespace` | Namespace/organization for the image | No | `${{ github.repository }}` |
 | `commit-sha` | Git commit SHA for image tagging | No | `${{ github.sha }}` |
 | `image-latest-tag` | Tag to apply for the latest image (single value, e.g., "latest") | No | `latest` |
 | `dockerfile` | Path to Dockerfile relative to working directory | No | `Dockerfile` |
+
+## Environment Variables
+
+| Name | Description | Required |
+|------|-------------|----------|
+| `REGISTRY_PASSWORD` | Password/token for registry authentication | Yes |
 
 ## Outputs
 
@@ -66,10 +73,11 @@ A GitHub Action that builds Docker images and pushes them to GitHub Container Re
 
 - **`working-directory`**: The directory containing your Dockerfile. Defaults to the repository root (`.`).
 - **`image-name`**: The name you want to give your Docker image (e.g., `my-app`, `api-server`).
-- **`github-token`**: GitHub token for authenticating with GitHub Container Registry. Typically `${{ secrets.GITHUB_TOKEN }}`.
-- **`github-actor`**: GitHub username for registry authentication. Typically `${{ github.actor }}`.
-- **`github-repository`**: Full repository name for image tagging. Typically `${{ github.repository }}`.
-- **`commit-sha`**: Git commit SHA for image tagging. Typically `${{ github.sha }}`.
+- **`registry`**: Container registry URL (defaults to `ghcr.io` for GitHub Container Registry).
+- **`registry-username`**: Username for registry authentication (defaults to `${{ github.actor }}`).
+- **`image-namespace`**: Namespace/organization for the image (defaults to `${{ github.repository }}`).
+- **`commit-sha`**: Git commit SHA for image tagging (defaults to `${{ github.sha }}`).
+- **`REGISTRY_PASSWORD`**: Environment variable containing the password/token for registry authentication.
 
 ## Examples
 
@@ -94,8 +102,9 @@ jobs:
       uses: optivem/publish-docker-image-action@v1
       with:
         image-name: my-awesome-app
-        registry-password: ${{ secrets.GITHUB_TOKEN }}
         image-latest-tag: "${{ github.ref_name }}"
+      env:
+        REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ### Docker Hub
@@ -107,9 +116,10 @@ jobs:
     image-name: my-awesome-app
     registry: docker.io
     registry-username: ${{ secrets.DOCKERHUB_USERNAME }}
-    registry-password: ${{ secrets.DOCKERHUB_TOKEN }}
     image-namespace: myorganization
     image-latest-tag: "v1.0.0"
+  env:
+    REGISTRY_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
 ```
 
 ### Google Container Registry
@@ -121,8 +131,9 @@ jobs:
     image-name: my-awesome-app
     registry: gcr.io
     registry-username: _json_key
-    registry-password: ${{ secrets.GCR_JSON_KEY }}
     image-namespace: my-gcp-project
+  env:
+    REGISTRY_PASSWORD: ${{ secrets.GCR_JSON_KEY }}
 ```
 
 ### Azure Container Registry
@@ -134,8 +145,9 @@ jobs:
     image-name: my-awesome-app
     registry: myregistry.azurecr.io
     registry-username: ${{ secrets.ACR_USERNAME }}
-    registry-password: ${{ secrets.ACR_PASSWORD }}
     image-namespace: myproject
+  env:
+    REGISTRY_PASSWORD: ${{ secrets.ACR_PASSWORD }}
 ```
 
 ### Amazon ECR
@@ -158,8 +170,9 @@ jobs:
     image-name: my-awesome-app
     registry: ${{ steps.login-ecr.outputs.registry }}
     registry-username: AWS
-    registry-password: ${{ steps.login-ecr.outputs.docker_password_stdout }}
     image-namespace: my-repo
+  env:
+    REGISTRY_PASSWORD: ${{ steps.login-ecr.outputs.docker_password_stdout }}
 ```
 
 ### Custom Dockerfile and Multiple Tags
@@ -171,8 +184,9 @@ jobs:
     working-directory: ./backend
     dockerfile: Dockerfile.prod
     image-name: my-backend-api
-    registry-password: ${{ secrets.GITHUB_TOKEN }}
     image-latest-tag: "stable"
+  env:
+    REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ## How It Works

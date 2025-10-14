@@ -24,7 +24,6 @@ jobs:
       run: |
         # Validate that all required inputs are defined
         grep -q "image-name:" action.yml
-        grep -q "registry-password:" action.yml
         echo "✅ All required inputs are defined"
         
     - name: Check branding
@@ -55,4 +54,5 @@ jobs:
       uses: ./
       with:
         image-name: test-image
-        registry-password: ${{ secrets.GITHUB_TOKEN }}
+      env:
+        REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}

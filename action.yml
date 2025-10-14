@@ -20,9 +20,6 @@ inputs:
     description: 'Username for registry authentication'
     required: false
     default: '${{ github.actor }}'
-  registry-password:
-    description: 'Password/token for registry authentication'
-    required: true
   image-namespace:
     description: 'Namespace/organization for the image (e.g., github.repository for GHCR)'
     required: false
@@ -89,9 +86,11 @@ runs:
     - name: Log in to Container Registry
       run: |
         echo "🔐 Logging in to ${{ inputs.registry }}..."
-        echo ${{ inputs.registry-password }} | docker login ${{ inputs.registry }} -u ${{ inputs.registry-username }} --password-stdin
+        echo $REGISTRY_PASSWORD | docker login ${{ inputs.registry }} -u ${{ inputs.registry-username }} --password-stdin
         echo "✅ Successfully logged in to registry"
       shell: bash
+      env:
+        REGISTRY_PASSWORD: ${{ env.REGISTRY_PASSWORD }}
 
     - name: Tag Docker image
       id: tag
