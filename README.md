@@ -4,6 +4,7 @@
 [![release](https://github.com/optivem/publish-docker-image-action/actions/workflows/release.yml/badge.svg)](https://github.com/optivem/publish-docker-image-action/actions/workflows/release.yml)
 
 [![GitHub release](https://img.shields.io/github/release/optivem/publish-docker-image-action.svg)](https://github.com/optivem/publish-docker-image-action/releases)
+[![GitHub](https://img.shields.io/github/license/optivem/publish-docker-image-action)](LICENSE)
 
 A GitHub Action that builds Docker images and pushes them to GitHub Container Registry (ghcr.io). This action simplifies the Docker build and push workflow for your CI/CD pipelines.
 
