@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.13] - 2025-12-09
+
+### Fixed
+- Fixed missing digest output by capturing SHA256 digest from docker push command
+- Image digest URL now properly populated in action outputs
+
 ### Changed
 - Repository renamed from `build-push-docker-action` to `publish-docker-image-action`
 - Action name updated from "Build and Push Docker Image" to "Publish Docker Image"
@@ -37,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Proper image tagging strategy
 - Clean and simple interface
 
-[Unreleased]: https://github.com/optivem/publish-docker-image-action/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/optivem/publish-docker-image-action/compare/v1.0.13...HEAD
+[1.0.13]: https://github.com/optivem/publish-docker-image-action/compare/v1.0.1...v1.0.13
 [1.0.1]: https://github.com/optivem/publish-docker-image-action/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/optivem/publish-docker-image-action/releases/tag/v1.0.0
