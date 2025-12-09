@@ -102,9 +102,11 @@ runs:
         
         echo "📤 Pushing Docker images..."
         
-        # Push SHA tagged image
-        docker push "${BASE_IMAGE}:${{ inputs.commit-sha }}"
+        # Push SHA tagged image and capture digest
+        DIGEST=$(docker push "${BASE_IMAGE}:${{ inputs.commit-sha }}" | grep -oP 'sha256:[a-f0-9]{64}' | head -n1)
+        echo "digest=$DIGEST" >> $GITHUB_OUTPUT
         echo "✅ Pushed SHA tagged image: ${BASE_IMAGE}:${{ inputs.commit-sha }}"
+        echo "📝 Image digest: $DIGEST"
         
         # Push latest tagged image
         docker push "${{ steps.tag.outputs.latest-image-url }}"
