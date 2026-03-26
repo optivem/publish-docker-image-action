@@ -1,3 +1,6 @@
+> [!WARNING]
+> This action has moved to [optivem/actions](https://github.com/optivem/actions). Use `optivem/actions/publish-docker-image@v1` instead.
+
 # Publish Docker Image Action
 
 [![CI](https://github.com/optivem/publish-docker-image-action/workflows/CI/badge.svg)](https://github.com/optivem/publish-docker-image-action/actions)
